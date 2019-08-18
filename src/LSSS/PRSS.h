@@ -4,8 +4,8 @@ Copyright (c) 2019, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 L
 
 All rights reserved
 */
-#ifndef _PRSS
-#define _PRSS
+#ifndef __PRSS_H_
+#define __PRSS_H_
 
 #include <vector>
 using namespace std;
@@ -30,15 +30,15 @@ class PRSS
   // My number
   unsigned int whoami;
 
-  void ReplicatedSetUp(Player &P, const CAS &AS, const MSP &M);
-  void MSP_SetUp(Player &P, const CAS &AS, const MSP &M);
+  inline void ReplicatedSetUp(Player &P, const CAS &AS, const MSP &M);
+  inline void MSP_SetUp(Player &P, const CAS &AS, const MSP &M);
 
   // When using a protocol we do batch production to save time
   vector<Share> batch;
   unsigned int batch_pos;
 
   // Protocol to produce a batch
-  void batch_production(Player &P);
+  inline void batch_production(Player &P);
 
 public:
   PRSS(Player &P);
@@ -51,11 +51,11 @@ public:
 /* Agree a random seed between all players in set A
  *    Gauranteed that whoami is in A
  */
-void AgreeRandom(Player &P, vector<unsigned int> &A, uint8_t *seed, int len,
+inline void AgreeRandom(Player &P, vector<unsigned int> &A, uint8_t *seed, int len,
                  int connection= 0);
 
 // Same but for all players
-void AgreeRandom(Player &P, uint8_t *seed, int len,
+inline void AgreeRandom(Player &P, uint8_t *seed, int len,
                  int connection= 0);
 
 #endif

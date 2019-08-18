@@ -1,0 +1,5 @@
+.vscode
+CONFIG.mine
+*.o
+*.x
+*.a
