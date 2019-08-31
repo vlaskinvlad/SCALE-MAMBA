@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2017, The University of Bristol, Senate House, Tyndall Avenue, Bristol, BS8 1TH, United Kingdom.
-Copyright (c) 2019, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
+Copyright (c) 2018, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
 
 All rights reserved
 */
@@ -21,9 +21,12 @@ using namespace std;
 #include "System/Networking.h"
 #include "System/RunTime.h"
 #include "config.h"
+#include "Input_Output/Input_Output_File.h"
 
 #include "Tools/ezOptionParser.h"
 using namespace ez;
+
+//extern int _USE_OT_THREAD; // Experimental variable only. To be deleted eventually XXXX
 
 void Usage(ezOptionParser &opt)
 {
@@ -75,6 +78,14 @@ int main(int argc, const char *argv[])
           "-verbose", // Flag token.
           "-v"        // Flag token.
   );
+  opt.add("datadir", // Default.
+          0,   // Required?
+          1,   // Number of args expected.
+          0,   // Delimiter if expecting multiple args.
+          "Directory for player data files.\n",  // Help description.
+          "-datadir",
+          "-d" // Flag token.
+  );
   opt.add("empty", // Default.
           0,       // Required?
           1,       // Number of args expected.
@@ -120,6 +131,13 @@ int main(int argc, const char *argv[])
           "-f",           // Flag token.
           "-fhefactories" // Flag token.
   );
+  opt.add("0", // Default.
+          0,   // Required?
+          0,   // Number of args expected.
+          0,   // Delimiter if expecting multiple args.
+          "Fire up the experiment OT/GC system",
+          "-OT" // Flag token.
+  );
 
   opt.parse(argc, argv);
 
@@ -127,6 +145,7 @@ int main(int argc, const char *argv[])
   int verbose, fhefacts;
   string progname;
   string memtype;
+  string datadir;
   unsigned int portnumbase;
 
   vector<string *> allArgs(opt.firstArgs);
@@ -176,6 +195,7 @@ int main(int argc, const char *argv[])
   portnumbase= (unsigned int) te;
   opt.get("-memory")->getString(memtype);
   opt.get("-verbose")->getInt(verbose);
+  opt.get("-datadir")->getString(datadir);
   opt.get("-fhefactories")->getInt(fhefacts);
   opt.get("-pns")->getInts(pns);
   opt.get("-min")->getInts(minimums);
@@ -193,6 +213,15 @@ int main(int argc, const char *argv[])
   OCD.maxb= (unsigned int) maximums[2];
   opt.get("-maxI")->getInt(te);
   OCD.maxI= (unsigned int) te;
+
+  /************************************
+   * Sort out OT Stuff (Experimental) *
+   ************************************/
+  // _USE_OT_THREAD= 0;
+  // if (opt.isSet("-OT"))
+  //   {
+  //     _USE_OT_THREAD= 1;
+  //   }
 
   cout << "(Min,Max) number of ...\n";
   cout << "\t(" << OCD.minm << ",";
@@ -365,8 +394,8 @@ int main(int argc, const char *argv[])
   // Here you configure the IO in the machine
   //  - This depends on what IO machinary you are using
   //  - Here we are just using the simple IO class
-  unique_ptr<Input_Output_Simple> io(new Input_Output_Simple);
-  io->init(cin, cout, true);
+  unique_ptr<Input_Output_File> io(new Input_Output_File);
+  io->init(cin, cout, true, datadir, my_number);
   machine.Setup_IO(std::move(io));
 
   // Load the initial tapes for the first program into the schedule
