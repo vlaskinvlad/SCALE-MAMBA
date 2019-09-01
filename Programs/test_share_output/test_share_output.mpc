@@ -1,0 +1,16 @@
+from common.channels import ChannelManager
+
+
+player_dict = {
+    'alice': 0,
+    'bob': 1,
+    'charlie': 2,
+}
+
+channel_dict = {
+    'test_shares': 1
+}
+
+with ChannelManager(player_dict, channel_dict) as channels:
+    test_secrets = channels.n_private_inputs(6, 'alice', 'test_shares')
+    output_shares(1, *test_secrets)

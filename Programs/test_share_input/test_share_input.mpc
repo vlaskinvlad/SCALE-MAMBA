@@ -1,0 +1,36 @@
+from Compiler.types import (
+    sint,
+)
+from Compiler.library import (
+    for_range,
+)
+from common.channels import ChannelManager
+
+
+player_dict = {
+    'alice': 0,
+    'bob': 1,
+    'charlie': 2,
+}
+
+channel_dict = {
+    'test_shares': 1
+}
+
+with ChannelManager(player_dict, channel_dict) as channels:
+    ARRAY_SIZE = channels.public_regint_input('test_shares')
+    in_shares_array = sint.Array(ARRAY_SIZE, 0)
+
+    @for_range(ARRAY_SIZE)
+    def f1(i):
+        tmp_sint = sint()
+        input_shares(1, *tmp_sint)
+        in_shares_array[i] = tmp_sint
+
+    @for_range(ARRAY_SIZE)
+    def f2(i):
+        channels.reveal(
+            in_shares_array[i],
+            'alice',
+            'test_shares',
+        )

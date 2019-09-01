@@ -1,0 +1,52 @@
+from Compiler.types import (
+    sint,
+    regint,
+)
+from Compiler.library import (
+    for_range,
+)
+from common.channels import ChannelManager
+
+
+player_dict = {
+    'alice': 0,
+    'bob': 1,
+    'charlie': 2,
+}
+
+channel_dict = {
+    'test_ints': 0,
+    'test_arrays': 1,
+    'test_public_cint': 2,
+    'test_public_regint': 3,
+}
+
+
+with ChannelManager(player_dict, channel_dict) as channels:
+    alice_test_ints = channels.n_private_inputs(3, 'alice', 'test_ints')
+    bob_test_ints = channels.n_private_inputs(3, 'bob', 'test_ints')
+    for a, b in zip(alice_test_ints, bob_test_ints):
+        channels.reveal(a, channel_name='test_ints')
+        channels.reveal(b, channel_name='test_ints')
+
+    ARRAY_SIZE = 3
+    x = sint.Array(ARRAY_SIZE, 0)
+    alice_test_array_values = channels.n_private_inputs(3, 'alice', 'test_arrays')
+    bob_test_array_indices = channels.n_private_inputs(3, 'bob', 'test_arrays')
+
+    for a, b in zip(alice_test_array_values, bob_test_array_indices):
+        @for_range(ARRAY_SIZE)
+        def f1(i):
+            x[i] += a * (b == i)
+
+    @for_range(ARRAY_SIZE)
+    def f2(i):
+        channels.reveal(x[i], channel_name='test_arrays')
+
+    pub_cint_inputs = channels.n_public_cint_inputs(3, 'test_public_cint')
+    for i in pub_cint_inputs:
+        channels.public_cint_output(i, 'test_public_cint')
+
+    @for_range(channels.public_regint_input('test_public_regint'))
+    def f3(i):
+        channels.public_regint_output(regint(i), 'test_public_regint')

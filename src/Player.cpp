@@ -26,7 +26,7 @@ using namespace std;
 #include "Tools/ezOptionParser.h"
 using namespace ez;
 
-//extern int _USE_OT_THREAD; // Experimental variable only. To be deleted eventually XXXX
+// extern int USE_OT_THREAD; // Experimental variable only. To be deleted eventually XXXX
 
 void Usage(ezOptionParser &opt)
 {
@@ -217,11 +217,11 @@ int main(int argc, const char *argv[])
   /************************************
    * Sort out OT Stuff (Experimental) *
    ************************************/
-  // _USE_OT_THREAD= 0;
-  // if (opt.isSet("-OT"))
-  //   {
-  //     _USE_OT_THREAD= 1;
-  //   }
+//  USE_OT_THREAD= 0;
+//  if (opt.isSet("-OT"))
+//    {
+//      USE_OT_THREAD= 1;
+//    }
 
   cout << "(Min,Max) number of ...\n";
   cout << "\t(" << OCD.minm << ",";
